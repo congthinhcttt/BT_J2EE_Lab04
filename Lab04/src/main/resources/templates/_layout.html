@@ -14,6 +14,10 @@
     <div style="padding-left: 40px">
         <a class="navbar-brand" th:href="@{/products}">Home</a>
         <a class="navbar-brand" th:href="@{/products/create}">Products</a>
+        <form class="form-inline d-flex justify-content-start" th:action="@{/products/search}" method="get">
+            <input class="form-control" type="search" placeholder="Search" aria-label="Search" name="key">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+        </form>
     </div>
 </nav>
 <div layout:fragment="content" class="container body-content">

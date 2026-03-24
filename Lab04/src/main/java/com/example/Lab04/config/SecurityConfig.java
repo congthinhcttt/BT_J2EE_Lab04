@@ -12,11 +12,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
     @Autowired
     private AccountService accountService;
 
@@ -25,22 +24,38 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    // Cấu hình AuthenticationManager sử dụng AccountService
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
 
-    // Cấu hình HttpSecurity
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/products").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/products/**").hasRole("ADMIN")
+        http
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/login", "/css/**", "/js/**", "/images/**").permitAll()
+
+                        // USER + ADMIN
+                        .requestMatchers("/products", "/cart/**", "/checkout/**").hasAnyRole("USER", "ADMIN")
+
+                        // Nếu search/filter/sort của bạn dùng các path con dưới /products
+                        .requestMatchers("/products/search", "/products/filter", "/products/sort", "/products/page/**")
+                        .hasAnyRole("USER", "ADMIN")
+
+                        // ADMIN only
+                        .requestMatchers("/products/add", "/products/save", "/products/edit/**", "/products/delete/**")
+                        .hasRole("ADMIN")
+
                         .anyRequest().authenticated()
                 )
-                .formLogin(withDefaults())
-                .logout(withDefaults());
+                .formLogin(form -> form
+                        .defaultSuccessUrl("/products", true)
+                        .permitAll()
+                )
+                .logout(logout -> logout
+                        .logoutSuccessUrl("/login?logout")
+                        .permitAll()
+                );
 
         return http.build();
     }

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{_layout}">
+<head>
+  <meta charset="UTF-8">
+  <title>Order Success</title>
+</head>
+<body>
+<div layout:fragment="content" class="container body-content">
+  <h1>Đặt hàng thành công</h1>
+
+  <p><strong>Mã đơn hàng:</strong> <span th:text="${order.id}"></span></p>
+  <p><strong>Ngày đặt:</strong> <span th:text="${order.orderDate}"></span></p>
+  <p><strong>Tổng tiền:</strong> <span th:text="${order.totalPrice}"></span></p>
+
+  <a th:href="@{/products}" class="btn btn-primary">Tiếp tục mua hàng</a>
+</div>
+</body>
+</html>
